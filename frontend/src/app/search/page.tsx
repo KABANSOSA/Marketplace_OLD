@@ -55,11 +55,7 @@ export default function SearchPage() {
           {products?.map((product) => (
             <ProductCard
               key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              imageUrl={product.imageUrl}
+              product={product}
             />
           ))}
         </div>
