@@ -9,7 +9,7 @@
     "vercel-build": "cd frontend && NODE_OPTIONS='--max_old_space_size=3072' npm install && npm run build"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "18.x"
   },
   "dependencies": {
     "next": "14.1.0",

@@ -7,5 +7,14 @@
   "env": {
     "NODE_ENV": "production",
     "NODE_OPTIONS": "--max_old_space_size=3072"
-  }
+  },
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "nodeVersion": "18.x"
+      }
+    }
+  ]
 } 
