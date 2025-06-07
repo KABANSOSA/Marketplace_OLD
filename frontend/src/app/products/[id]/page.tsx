@@ -10,7 +10,7 @@ import { products } from '@/mocks/products';
 async function getProduct(id: string) {
   // Имитируем задержку сети
   await new Promise(resolve => setTimeout(resolve, 1000));
-  const product = products.find(p => p.id === parseInt(id));
+  const product = products.find(p => p.id === id);
   if (!product) {
     throw new Error('Product not found');
   }
@@ -32,7 +32,6 @@ export default function ProductPage() {
         id: product.id,
         name: product.name,
         price: product.price,
-        quantity: 1,
         imageUrl: product.imageUrl,
       });
     }
