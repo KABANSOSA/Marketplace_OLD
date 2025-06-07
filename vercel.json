@@ -1,6 +1,10 @@
 {
-  "buildCommand": "cd frontend && npm install --omit=dev && npm run build",
+  "version": 2,
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/.next",
   "framework": "nextjs",
-  "installCommand": "cd frontend && npm install --omit=dev"
+  "installCommand": "cd frontend && npm install",
+  "env": {
+    "NODE_ENV": "production"
+  }
 } 
