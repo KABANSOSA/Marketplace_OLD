@@ -1,6 +1,12 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "cd frontend && npm install --production && npm run build",
   "outputDirectory": "frontend/.next",
   "framework": "nextjs",
-  "installCommand": "npm install"
+  "installCommand": "cd frontend && npm install --production",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ]
 } 
