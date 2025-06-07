@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from '@/components/ProductCard';
 import { useSearchParams } from 'next/navigation';
@@ -17,7 +17,7 @@ async function searchProducts(query: string) {
   );
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
 
@@ -61,5 +61,13 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Загрузка результатов поиска...</div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 } 
