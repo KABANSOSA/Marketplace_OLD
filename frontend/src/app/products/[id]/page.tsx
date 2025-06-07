@@ -17,6 +17,12 @@ async function getProduct(id: string) {
   return product;
 }
 
+export async function generateStaticParams() {
+  return products.map((product) => ({
+    id: product.id,
+  }));
+}
+
 export default function ProductPage() {
   const params = useParams();
   const { addItem } = useCart();
