@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, total, clearCart } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
             <div className="mt-6 border-t border-gray-200 pt-6">
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Итого</p>
-                <p>{total.toLocaleString('ru-RU')} ₽</p>
+                <p>{totalPrice.toLocaleString('ru-RU')} ₽</p>
               </div>
               <p className="mt-0.5 text-sm text-gray-500">
                 Доставка и налоги рассчитываются при оформлении заказа.
