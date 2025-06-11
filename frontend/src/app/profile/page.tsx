@@ -1,251 +1,261 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { User, Package, Heart, Settings, LogOut } from 'lucide-react';
+
+interface Order {
+  id: string;
+  date: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  total: number;
+  items: number;
+}
 
 interface UserProfile {
   name: string;
   email: string;
   phone: string;
-  company: string;
-  position: string;
+  avatar: string;
 }
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState('profile');
-  const [profile, setProfile] = useState<UserProfile>({
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>('profile');
+
+  // Пример данных пользователя
+  const userProfile: UserProfile = {
     name: 'Иван Иванов',
     email: 'ivan@example.com',
     phone: '+7 (999) 123-45-67',
-    company: 'ООО "СтройТех"',
-    position: 'Менеджер по закупкам'
-  });
+    avatar: '/images/avatar.jpg',
+  };
 
-  const [orders, setOrders] = useState([
+  // Пример данных заказов
+  const orders: Order[] = [
     {
-      id: '1',
-      date: '2024-02-20',
-      status: 'Доставлен',
-      total: 125000,
-      items: [
-        { name: 'Фильтр масляный CAT 1R-0751', quantity: 2, price: 45000 },
-        { name: 'Ремень привода CAT 4N-9999', quantity: 1, price: 35000 }
-      ]
+      id: '123456',
+      date: '2024-03-15',
+      status: 'delivered',
+      total: 9999,
+      items: 2,
     },
     {
-      id: '2',
-      date: '2024-02-15',
-      status: 'В обработке',
-      total: 85000,
-      items: [
-        { name: 'Тормозная колодка CAT 1P-2295', quantity: 4, price: 21250 }
-      ]
-    }
-  ]);
+      id: '123457',
+      date: '2024-03-10',
+      status: 'shipped',
+      total: 4999,
+      items: 1,
+    },
+  ];
 
-  const handleProfileUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Здесь будет логика обновления профиля
-    alert('Профиль обновлен');
+  const getStatusText = (status: Order['status']) => {
+    const statusMap = {
+      pending: 'Ожидает обработки',
+      processing: 'В обработке',
+      shipped: 'Отправлен',
+      delivered: 'Доставлен',
+    };
+    return statusMap[status];
+  };
+
+  const getStatusColor = (status: Order['status']) => {
+    const colorMap = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      processing: 'bg-blue-100 text-blue-800',
+      shipped: 'bg-purple-100 text-purple-800',
+      delivered: 'bg-green-100 text-green-800',
+    };
+    return colorMap[status];
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Личный кабинет</h1>
-      
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Боковое меню */}
-        <div className="w-full md:w-64">
-          <nav className="space-y-1">
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`w-full text-left px-4 py-2 rounded-md ${
-                activeTab === 'profile'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Профиль
-            </button>
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`w-full text-left px-4 py-2 rounded-md ${
-                activeTab === 'orders'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Мои заказы
-            </button>
-            <button
-              onClick={() => setActiveTab('favorites')}
-              className={`w-full text-left px-4 py-2 rounded-md ${
-                activeTab === 'favorites'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Избранное
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`w-full text-left px-4 py-2 rounded-md ${
-                activeTab === 'settings'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              Настройки
-            </button>
-          </nav>
-        </div>
-
-        {/* Основной контент */}
-        <div className="flex-1">
-          {activeTab === 'profile' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-6">Профиль</h2>
-              <form onSubmit={handleProfileUpdate} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    ФИО
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.name}
-                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={profile.email}
-                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Телефон
-                  </label>
-                  <input
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Компания
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.company}
-                    onChange={(e) => setProfile({ ...profile, company: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Должность
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.position}
-                    onChange={(e) => setProfile({ ...profile, position: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="pt-24 pb-24">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
+            {/* Боковое меню */}
+            <div className="lg:col-span-3">
+              <div className="space-y-1">
                 <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  onClick={() => setActiveTab('profile')}
+                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    activeTab === 'profile'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 >
-                  Сохранить изменения
+                  <User className="mr-3 h-5 w-5" />
+                  Профиль
                 </button>
-              </form>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    activeTab === 'orders'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <Package className="mr-3 h-5 w-5" />
+                  Мои заказы
+                </button>
+                <button
+                  onClick={() => setActiveTab('favorites')}
+                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    activeTab === 'favorites'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <Heart className="mr-3 h-5 w-5" />
+                  Избранное
+                </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    activeTab === 'settings'
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <Settings className="mr-3 h-5 w-5" />
+                  Настройки
+                </button>
+                <button
+                  onClick={() => {
+                    // Здесь будет логика выхода
+                    console.log('Logout');
+                  }}
+                  className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 hover:text-red-700"
+                >
+                  <LogOut className="mr-3 h-5 w-5" />
+                  Выйти
+                </button>
+              </div>
             </div>
-          )}
 
-          {activeTab === 'orders' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-6">Мои заказы</h2>
-              <div className="space-y-6">
-                {orders.map((order) => (
-                  <div key={order.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Заказ #{order.id}</p>
-                        <p className="text-sm text-gray-500">{order.date}</p>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-sm ${
-                        order.status === 'Доставлен' 
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {order.status}
-                      </span>
+            {/* Основной контент */}
+            <div className="mt-8 lg:mt-0 lg:col-span-9">
+              {activeTab === 'profile' && (
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">Профиль</h2>
+                  <div className="mt-6 flex items-center">
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={userProfile.avatar}
+                        alt={userProfile.name}
+                        width={96}
+                        height={96}
+                        className="h-24 w-24 rounded-full"
+                      />
                     </div>
-                    <div className="space-y-2">
-                      {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span>{item.name} x {item.quantity}</span>
-                          <span>{item.price.toLocaleString()} ₽</span>
+                    <div className="ml-6">
+                      <h3 className="text-lg font-medium text-gray-900">{userProfile.name}</h3>
+                      <p className="text-sm text-gray-500">{userProfile.email}</p>
+                      <p className="text-sm text-gray-500">{userProfile.phone}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'orders' && (
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">Мои заказы</h2>
+                  <div className="mt-6">
+                    <div className="flow-root">
+                      <ul className="-my-5 divide-y divide-gray-200">
+                        {orders.map((order) => (
+                          <li key={order.id} className="py-5">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">
+                                  Заказ #{order.id}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(order.date).toLocaleDateString('ru-RU')}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {order.items} {order.items === 1 ? 'товар' : 'товара'}
+                                </p>
+                              </div>
+                              <div className="flex items-center">
+                                <span
+                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                                    order.status
+                                  )}`}
+                                >
+                                  {getStatusText(order.status)}
+                                </span>
+                                <p className="ml-4 text-sm font-medium text-gray-900">
+                                  {order.total.toLocaleString('ru-RU')} ₽
+                                </p>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'favorites' && (
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">Избранное</h2>
+                  <div className="mt-6">
+                    <p className="text-sm text-gray-500">
+                      Здесь будут отображаться товары, которые вы добавили в избранное.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'settings' && (
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900">Настройки</h2>
+                  <div className="mt-6 space-y-6">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Уведомления</h3>
+                      <div className="mt-4 space-y-4">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id="email-notifications"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <label htmlFor="email-notifications" className="ml-3 text-sm text-gray-700">
+                            Email-уведомления
+                          </label>
                         </div>
-                      ))}
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id="sms-notifications"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <label htmlFor="sms-notifications" className="ml-3 text-sm text-gray-700">
+                            SMS-уведомления
+                          </label>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t flex justify-between items-center">
-                      <span className="font-semibold">Итого:</span>
-                      <span className="font-semibold">{order.total.toLocaleString()} ₽</span>
+
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Безопасность</h3>
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                        >
+                          Изменить пароль
+                        </button>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'favorites' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-6">Избранное</h2>
-              <p className="text-gray-500">У вас пока нет избранных товаров</p>
-            </div>
-          )}
-
-          {activeTab === 'settings' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-6">Настройки</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Уведомления</h3>
-                  <div className="space-y-4">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                      <span className="ml-2">Email-уведомления о статусе заказа</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                      <span className="ml-2">SMS-уведомления о статусе заказа</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                      <span className="ml-2">Новости и акции</span>
-                    </label>
-                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Безопасность</h3>
-                  <button className="text-blue-600 hover:text-blue-800">
-                    Изменить пароль
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

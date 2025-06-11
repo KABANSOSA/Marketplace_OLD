@@ -1,14 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { Search } from './Search';
-import { Cart } from './Cart';
-import { useCart } from '@/contexts/CartContext';
+import Image from 'next/image';
+import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
 
-export function Navigation() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const { items } = useCart();
+interface NavigationProps {
+  cartItemsCount?: number;
+}
+
+export default function Navigation({ cartItemsCount = 0 }: NavigationProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Здесь будет логика поиска
+    console.log('Search:', searchQuery);
+  };
 
   return (
     <nav className="bg-white shadow">
@@ -16,7 +25,7 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold text-indigo-600">
+              <Link href="/" className="text-2xl font-bold text-blue-600">
                 Marketplace
               </Link>
             </div>
@@ -28,79 +37,108 @@ export function Navigation() {
                 Каталог
               </Link>
               <Link
-                href="/about"
+                href="/categories"
                 className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
-                О нас
+                Категории
               </Link>
               <Link
-                href="/contacts"
+                href="/sellers"
                 className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
-                Контакты
+                Продавцы
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Search />
+
+          <div className="flex-1 flex items-center justify-center px-2 lg:ml-6 lg:justify-end">
+            <div className="max-w-lg w-full lg:max-w-xs">
+              <form onSubmit={handleSearch} className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Поиск товаров"
+                />
+              </form>
             </div>
-            <div className="ml-4 relative">
+          </div>
+
+          <div className="flex items-center">
+            <Link
+              href="/cart"
+              className="ml-6 flow-root lg:ml-8"
+            >
+              <div className="group -m-2 p-2 flex items-center">
+                <ShoppingCart
+                  className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+                />
+                <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                  {cartItemsCount}
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/profile"
+              className="ml-6 flow-root lg:ml-8"
+            >
+              <div className="group -m-2 p-2 flex items-center">
+                <User
+                  className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+                />
+              </div>
+            </Link>
+
+            <div className="flex items-center lg:hidden">
               <button
-                onClick={() => setIsCartOpen(!isCartOpen)}
-                className="relative p-2 text-gray-600 hover:text-gray-900"
+                type="button"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                {items.length > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-indigo-600 rounded-full">
-                    {items.length}
-                  </span>
+                <span className="sr-only">Открыть меню</span>
+                {isMenuOpen ? (
+                  <X className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
                 )}
               </button>
-              {isCartOpen && (
-                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg z-50">
-                  <Cart />
-                </div>
-              )}
-            </div>
-            <div className="ml-4 flow-root lg:ml-6">
-              <Link
-                href="/profile"
-                className="group -m-2 p-2 flex items-center"
-              >
-                <svg
-                  className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                  Личный кабинет
-                </span>
-              </Link>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Мобильное меню */}
+      {isMenuOpen && (
+        <div className="lg:hidden">
+          <div className="pt-2 pb-3 space-y-1">
+            <Link
+              href="/catalog"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+            >
+              Каталог
+            </Link>
+            <Link
+              href="/categories"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+            >
+              Категории
+            </Link>
+            <Link
+              href="/sellers"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+            >
+              Продавцы
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 } 
