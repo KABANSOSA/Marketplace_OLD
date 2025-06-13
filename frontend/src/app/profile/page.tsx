@@ -1,263 +1,235 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { User, Package, Heart, Settings, LogOut } from 'lucide-react';
 
-interface Order {
-  id: string;
-  date: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
-  total: number;
-  items: number;
-}
+// Временные данные для демонстрации
+const user = {
+  name: 'Иван Иванов',
+  email: 'ivan@example.com',
+  phone: '+7 (999) 123-45-67',
+  address: 'г. Москва, ул. Примерная, д. 1',
+};
 
-interface UserProfile {
-  name: string;
-  email: string;
-  phone: string;
-  avatar: string;
-}
+const recentOrders = [
+  {
+    id: 1,
+    date: '2024-02-15',
+    status: 'Доставлен',
+    total: 85000,
+    items: [
+      {
+        id: 1,
+        name: 'Гидроцилиндр Komatsu PC200',
+        price: 85000,
+        image: 'https://via.placeholder.com/400x300?text=Гидроцилиндр',
+        quantity: 1,
+      },
+    ],
+  },
+  {
+    id: 2,
+    date: '2024-02-10',
+    status: 'В пути',
+    total: 250000,
+    items: [
+      {
+        id: 2,
+        name: 'Двигатель Cummins 6BT',
+        price: 250000,
+        image: 'https://via.placeholder.com/400x300?text=Двигатель',
+        quantity: 1,
+      },
+    ],
+  },
+];
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>('profile');
-
-  // Пример данных пользователя
-  const userProfile: UserProfile = {
-    name: 'Иван Иванов',
-    email: 'ivan@example.com',
-    phone: '+7 (999) 123-45-67',
-    avatar: '/images/avatar.jpg',
-  };
-
-  // Пример данных заказов
-  const orders: Order[] = [
-    {
-      id: '123456',
-      date: '2024-03-15',
-      status: 'delivered',
-      total: 9999,
-      items: 2,
-    },
-    {
-      id: '123457',
-      date: '2024-03-10',
-      status: 'shipped',
-      total: 4999,
-      items: 1,
-    },
-  ];
-
-  const getStatusText = (status: Order['status']) => {
-    const statusMap = {
-      pending: 'Ожидает обработки',
-      processing: 'В обработке',
-      shipped: 'Отправлен',
-      delivered: 'Доставлен',
-    };
-    return statusMap[status];
-  };
-
-  const getStatusColor = (status: Order['status']) => {
-    const colorMap = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
-      shipped: 'bg-purple-100 text-purple-800',
-      delivered: 'bg-green-100 text-green-800',
-    };
-    return colorMap[status];
-  };
+  const [activeTab, setActiveTab] = useState('orders');
 
   return (
-    <div className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pt-24 pb-24">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
-            {/* Боковое меню */}
-            <div className="lg:col-span-3">
-              <div className="space-y-1">
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeTab === 'profile'
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <User className="mr-3 h-5 w-5" />
-                  Профиль
-                </button>
-                <button
-                  onClick={() => setActiveTab('orders')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeTab === 'orders'
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Package className="mr-3 h-5 w-5" />
-                  Мои заказы
-                </button>
-                <button
-                  onClick={() => setActiveTab('favorites')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeTab === 'favorites'
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Heart className="mr-3 h-5 w-5" />
-                  Избранное
-                </button>
-                <button
-                  onClick={() => setActiveTab('settings')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeTab === 'settings'
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Settings className="mr-3 h-5 w-5" />
-                  Настройки
-                </button>
-                <button
-                  onClick={() => {
-                    // Здесь будет логика выхода
-                    console.log('Logout');
-                  }}
-                  className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 hover:text-red-700"
-                >
-                  <LogOut className="mr-3 h-5 w-5" />
-                  Выйти
-                </button>
+    <main className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Боковое меню */}
+        <div className="md:col-span-1">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="font-semibold">{user.name}</h2>
+                <p className="text-sm text-gray-600">{user.email}</p>
               </div>
             </div>
-
-            {/* Основной контент */}
-            <div className="mt-8 lg:mt-0 lg:col-span-9">
-              {activeTab === 'profile' && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Профиль</h2>
-                  <div className="mt-6 flex items-center">
-                    <div className="flex-shrink-0">
-                      <Image
-                        src={userProfile.avatar}
-                        alt={userProfile.name}
-                        width={96}
-                        height={96}
-                        className="h-24 w-24 rounded-full"
-                      />
-                    </div>
-                    <div className="ml-6">
-                      <h3 className="text-lg font-medium text-gray-900">{userProfile.name}</h3>
-                      <p className="text-sm text-gray-500">{userProfile.email}</p>
-                      <p className="text-sm text-gray-500">{userProfile.phone}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'orders' && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Мои заказы</h2>
-                  <div className="mt-6">
-                    <div className="flow-root">
-                      <ul className="-my-5 divide-y divide-gray-200">
-                        {orders.map((order) => (
-                          <li key={order.id} className="py-5">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">
-                                  Заказ #{order.id}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {new Date(order.date).toLocaleDateString('ru-RU')}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {order.items} {order.items === 1 ? 'товар' : 'товара'}
-                                </p>
-                              </div>
-                              <div className="flex items-center">
-                                <span
-                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                                    order.status
-                                  )}`}
-                                >
-                                  {getStatusText(order.status)}
-                                </span>
-                                <p className="ml-4 text-sm font-medium text-gray-900">
-                                  {order.total.toLocaleString('ru-RU')} ₽
-                                </p>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'favorites' && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Избранное</h2>
-                  <div className="mt-6">
-                    <p className="text-sm text-gray-500">
-                      Здесь будут отображаться товары, которые вы добавили в избранное.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'settings' && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Настройки</h2>
-                  <div className="mt-6 space-y-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-900">Уведомления</h3>
-                      <div className="mt-4 space-y-4">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id="email-notifications"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <label htmlFor="email-notifications" className="ml-3 text-sm text-gray-700">
-                            Email-уведомления
-                          </label>
-                        </div>
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id="sms-notifications"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <label htmlFor="sms-notifications" className="ml-3 text-sm text-gray-700">
-                            SMS-уведомления
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-900">Безопасность</h3>
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          Изменить пароль
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <nav className="space-y-2">
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg ${
+                  activeTab === 'orders'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'hover:bg-gray-50'
+                }`}
+              >
+                <Package className="w-5 h-5" />
+                <span>Мои заказы</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('favorites')}
+                className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg ${
+                  activeTab === 'favorites'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'hover:bg-gray-50'
+                }`}
+              >
+                <Heart className="w-5 h-5" />
+                <span>Избранное</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg ${
+                  activeTab === 'settings'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'hover:bg-gray-50'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Настройки</span>
+              </button>
+              <button className="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50">
+                <LogOut className="w-5 h-5" />
+                <span>Выйти</span>
+              </button>
+            </nav>
           </div>
         </div>
+
+        {/* Основной контент */}
+        <div className="md:col-span-3">
+          {activeTab === 'orders' && (
+            <div className="space-y-6">
+              <h1 className="text-2xl font-bold">Мои заказы</h1>
+              {recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="bg-white rounded-lg shadow-sm p-6"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-semibold">Заказ #{order.id}</h3>
+                      <p className="text-sm text-gray-600">
+                        от {new Date(order.date).toLocaleDateString('ru-RU')}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        order.status === 'Доставлен'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    {order.items.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between text-sm text-gray-600"
+                      >
+                        <span>
+                          {item.name} x {item.quantity}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t">
+                    <span className="font-semibold">
+                      Итого: {order.total.toLocaleString('ru-RU')} ₽
+                    </span>
+                    <Link
+                      href={`/profile/orders/${order.id}`}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      Подробнее
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'favorites' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h1 className="text-2xl font-bold mb-4">Избранное</h1>
+              <p className="text-gray-600">
+                У вас пока нет избранных товаров. Перейдите в{' '}
+                <Link href="/catalog" className="text-blue-600 hover:text-blue-700">
+                  каталог
+                </Link>
+                , чтобы добавить товары в избранное.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h1 className="text-2xl font-bold mb-6">Настройки профиля</h1>
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Имя
+                    </label>
+                    <input
+                      type="text"
+                      value={user.name}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={user.email}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Телефон
+                    </label>
+                    <input
+                      type="tel"
+                      value={user.phone}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Адрес
+                    </label>
+                    <input
+                      type="text"
+                      value={user.address}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Сохранить изменения
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </main>
   );
 } 

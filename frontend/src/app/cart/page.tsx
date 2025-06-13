@@ -3,167 +3,145 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 interface CartItem {
-  id: string;
+  id: number;
   name: string;
   price: number;
   image: string;
   quantity: number;
-  seller: string;
 }
 
-export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Товар 1',
-      price: 9999,
-      image: '/images/product1.jpg',
-      quantity: 1,
-      seller: 'Продавец 1',
-    },
-    // Добавьте больше товаров
-  ]);
+// Временные данные для демонстрации
+const initialCartItems: CartItem[] = [
+  {
+    id: 1,
+    name: 'Гидроцилиндр Komatsu PC200',
+    price: 85000,
+    image: 'https://via.placeholder.com/400x300?text=Гидроцилиндр',
+    quantity: 1,
+  },
+  {
+    id: 2,
+    name: 'Двигатель Cummins 6BT',
+    price: 250000,
+    image: 'https://via.placeholder.com/400x300?text=Двигатель',
+    quantity: 1,
+  },
+];
 
-  const updateQuantity = (id: string, newQuantity: number) => {
+export default function CartPage() {
+  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+
+  const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems((items) =>
-      items.map((item) =>
+    setCartItems(
+      cartItems.map((item) =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
   };
 
-  const removeItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+  const removeItem = (id: number) => {
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const shipping = 1000;
+  const total = subtotal + shipping;
 
   return (
-    <div className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pt-24 pb-24">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Корзина</h1>
+    <main className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Корзина</h1>
 
-          {cartItems.length === 0 ? (
-            <div className="mt-8 text-center">
-              <h2 className="text-lg font-medium text-gray-900">Ваша корзина пуста</h2>
-              <p className="mt-2 text-sm text-gray-500">
-                Добавьте товары в корзину, чтобы оформить заказ
-              </p>
-              <div className="mt-6">
-                <Link
-                  href="/catalog"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+      {cartItems.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600 mb-4">Ваша корзина пуста</p>
+          <Link
+            href="/catalog"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Перейти в каталог
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            {cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-4 py-4 border-b last:border-b-0"
+              >
+                <div className="relative w-24 h-24">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+                <div className="flex-grow">
+                  <h3 className="font-medium">{item.name}</h3>
+                  <p className="text-gray-600">
+                    {item.price.toLocaleString('ru-RU')} ₽
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="p-1 rounded-lg border hover:bg-gray-50"
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="p-1 rounded-lg border hover:bg-gray-50"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="p-2 text-gray-400 hover:text-red-500"
                 >
-                  Перейти в каталог
-                </Link>
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
-            </div>
-          ) : (
-            <div className="mt-8 lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start">
-              <div className="lg:col-span-7">
-                <ul className="border-t border-b border-gray-200 divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    <li key={item.id} className="flex py-6 sm:py-10">
-                      <div className="flex-shrink-0">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          width={150}
-                          height={150}
-                          className="w-24 h-24 rounded-md object-center object-cover sm:w-32 sm:h-32"
-                        />
-                      </div>
+            ))}
+          </div>
 
-                      <div className="ml-4 flex-1 flex flex-col sm:ml-6">
-                        <div>
-                          <div className="flex justify-between">
-                            <h4 className="text-sm">
-                              <Link href={`/product/${item.id}`} className="font-medium text-gray-700 hover:text-gray-800">
-                                {item.name}
-                              </Link>
-                            </h4>
-                            <p className="ml-4 text-sm font-medium text-gray-900">
-                              {item.price.toLocaleString('ru-RU')} ₽
-                            </p>
-                          </div>
-                          <p className="mt-1 text-sm text-gray-500">{item.seller}</p>
-                        </div>
-
-                        <div className="mt-4 flex-1 flex items-end justify-between">
-                          <div className="flex items-center">
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="text-gray-500 hover:text-gray-700"
-                            >
-                              <Minus className="h-5 w-5" />
-                            </button>
-                            <span className="mx-2 text-gray-500">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="text-gray-500 hover:text-gray-700"
-                            >
-                              <Plus className="h-5 w-5" />
-                            </button>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => removeItem(item.id)}
-                            className="text-sm font-medium text-red-600 hover:text-red-500"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+          <div className="bg-gray-50 p-6 rounded-lg h-fit">
+            <h2 className="text-xl font-semibold mb-4">Итого</h2>
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between">
+                <span>Подытог</span>
+                <span>{subtotal.toLocaleString('ru-RU')} ₽</span>
               </div>
-
-              {/* Итого */}
-              <div className="mt-10 lg:mt-0 lg:col-span-5">
-                <div className="bg-gray-50 rounded-lg px-4 py-6 sm:p-6 lg:p-8">
-                  <h2 className="text-lg font-medium text-gray-900">Итого</h2>
-                  <div className="mt-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-600">Товары ({cartItems.length})</p>
-                      <p className="text-sm font-medium text-gray-900">
-                        {total.toLocaleString('ru-RU')} ₽
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-600">Доставка</p>
-                      <p className="text-sm font-medium text-gray-900">Бесплатно</p>
-                    </div>
-                    <div className="border-t border-gray-200 pt-4">
-                      <div className="flex items-center justify-between">
-                        <p className="text-base font-medium text-gray-900">Итого к оплате</p>
-                        <p className="text-base font-medium text-gray-900">
-                          {total.toLocaleString('ru-RU')} ₽
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <Link
-                      href="/checkout"
-                      className="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-                    >
-                      Оформить заказ
-                    </Link>
-                  </div>
+              <div className="flex justify-between">
+                <span>Доставка</span>
+                <span>{shipping.toLocaleString('ru-RU')} ₽</span>
+              </div>
+              <div className="border-t pt-2 mt-2">
+                <div className="flex justify-between font-semibold">
+                  <span>Итого</span>
+                  <span>{total.toLocaleString('ru-RU')} ₽</span>
                 </div>
               </div>
             </div>
-          )}
+            <Link
+              href="/checkout"
+              className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Оформить заказ
+            </Link>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </main>
   );
 } 

@@ -1,28 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Marketplace
 
-## Getting Started
+Современный маркетплейс для покупки и продажи товаров.
 
-First, run the development server:
+## Технологии
 
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Lucide Icons
+
+## Установка
+
+1. Клонируйте репозиторий:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/marketplace.git
+cd marketplace/frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Установите зависимости:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Запустите проект в режиме разработки:
+```bash
+npm run dev
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+4. Откройте [http://localhost:3000](http://localhost:3000) в вашем браузере.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Структура проекта
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+frontend/
+├── src/
+│   ├── app/              # Страницы приложения
+│   ├── components/       # React компоненты
+│   ├── lib/             # Утилиты и хелперы
+│   └── types/           # TypeScript типы
+├── public/              # Статические файлы
+└── ...
+```
+
+## Скрипты
+
+- `npm run dev` - Запуск сервера разработки
+- `npm run build` - Сборка проекта
+- `npm run start` - Запуск production сервера
+- `npm run lint` - Проверка кода линтером
+
+## Лицензия
+
+MIT
 
 ## Learn More
 

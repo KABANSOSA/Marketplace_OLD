@@ -2,143 +2,189 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  Search,
+} from 'lucide-react';
 
-interface NavigationProps {
-  cartItemsCount?: number;
-}
+const navigation = [
+  { name: 'Каталог', href: '/catalog' },
+  { name: 'О нас', href: '/about' },
+  { name: 'Контакты', href: '/contacts' },
+];
 
-export default function Navigation({ cartItemsCount = 0 }: NavigationProps) {
+const categories = [
+  { name: 'Гидравлика', href: '/catalog?category=hydraulics' },
+  { name: 'Двигатели', href: '/catalog?category=engines' },
+  { name: 'Запчасти', href: '/catalog?category=spare-parts' },
+  { name: 'Инструменты', href: '/catalog?category=tools' },
+];
+
+export default function Navigation() {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Здесь будет логика поиска
-    console.log('Search:', searchQuery);
-  };
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                Marketplace
+    <>
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center">
+              <span className="text-xl font-bold text-blue-600">Marketplace</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-gray-600 hover:text-blue-600 ${
+                    pathname === item.href ? 'text-blue-600' : ''
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 text-gray-600 hover:text-blue-600"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <Link
+                href="/cart"
+                className="p-2 text-gray-600 hover:text-blue-600 relative"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  2
+                </span>
+              </Link>
+              <Link
+                href="/auth/login"
+                className="p-2 text-gray-600 hover:text-blue-600"
+              >
+                <User className="w-5 h-5" />
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                href="/catalog"
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Каталог
-              </Link>
-              <Link
-                href="/categories"
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Категории
-              </Link>
-              <Link
-                href="/sellers"
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Продавцы
-              </Link>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 text-gray-600 hover:text-blue-600"
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === item.href
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              <div className="flex items-center px-5">
+                <div className="flex-shrink-0">
+                  <User className="w-10 h-10 text-gray-400" />
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-gray-800">
+                    Гость
+                  </div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Войдите в аккаунт
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 px-2 space-y-1">
+                <Link
+                  href="/auth/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  Войти
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  Регистрация
+                </Link>
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="flex-1 flex items-center justify-center px-2 lg:ml-6 lg:justify-end">
-            <div className="max-w-lg w-full lg:max-w-xs">
-              <form onSubmit={handleSearch} className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
+        {/* Search overlay */}
+        {isSearchOpen && (
+          <div className="fixed inset-0 bg-white z-50">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Поиск</h2>
+                <button
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-2 text-gray-600 hover:text-blue-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="relative">
                 <input
                   type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Поиск товаров"
+                  placeholder="Поиск товаров..."
+                  className="w-full px-4 py-3 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-              </form>
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              </div>
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-gray-500 mb-3">
+                  Популярные категории
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.name}
+                      href={category.href}
+                      className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="flex items-center">
-            <Link
-              href="/cart"
-              className="ml-6 flow-root lg:ml-8"
-            >
-              <div className="group -m-2 p-2 flex items-center">
-                <ShoppingCart
-                  className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                  aria-hidden="true"
-                />
-                <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                  {cartItemsCount}
-                </span>
-              </div>
-            </Link>
-
-            <Link
-              href="/profile"
-              className="ml-6 flow-root lg:ml-8"
-            >
-              <div className="group -m-2 p-2 flex items-center">
-                <User
-                  className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                  aria-hidden="true"
-                />
-              </div>
-            </Link>
-
-            <div className="flex items-center lg:hidden">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <span className="sr-only">Открыть меню</span>
-                {isMenuOpen ? (
-                  <X className="block h-6 w-6" aria-hidden="true" />
-                ) : (
-                  <Menu className="block h-6 w-6" aria-hidden="true" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Мобильное меню */}
-      {isMenuOpen && (
-        <div className="lg:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            <Link
-              href="/catalog"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-            >
-              Каталог
-            </Link>
-            <Link
-              href="/categories"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-            >
-              Категории
-            </Link>
-            <Link
-              href="/sellers"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-            >
-              Продавцы
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </header>
+    </>
   );
 } 

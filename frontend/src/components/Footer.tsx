@@ -44,119 +44,85 @@ const navigation = {
   ],
 };
 
+const categories = [
+  { name: 'Гидравлика', href: '/catalog?category=hydraulics' },
+  { name: 'Двигатели', href: '/catalog?category=engines' },
+  { name: 'Запчасти', href: '/catalog?category=spare-parts' },
+  { name: 'Инструменты', href: '/catalog?category=tools' },
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-white" aria-labelledby="footer-heading">
-      <h2 id="footer-heading" className="sr-only">
-        Footer
-      </h2>
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div className="space-y-8 xl:col-span-1">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Marketplace
-            </Link>
-            <p className="text-gray-500 text-base">
-              Ваш надежный маркетплейс для покупок и продаж. Мы предлагаем широкий выбор товаров и
-              удобный сервис для продавцов.
+    <footer className="bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">О компании</h3>
+            <p className="text-gray-400">
+              Мы предлагаем широкий выбор запчастей для спецтехники от
+              проверенных производителей.
             </p>
-            <div className="flex space-x-6">
-              {navigation.social.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <span className="sr-only">{item.name}</span>
-                  <item.icon className="h-6 w-6" aria-hidden="true" />
-                </a>
-              ))}
-            </div>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Поддержка
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  {navigation.support.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        className="text-base text-gray-500 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-12 md:mt-0">
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Компания
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  {navigation.main.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        className="text-base text-gray-500 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-                  Правовая информация
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  {navigation.legal.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        className="text-base text-gray-500 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-12 md:mt-0">
-                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Каталог</h3>
+            <ul className="space-y-2">
+              {categories.map((category) => (
+                <li key={category.name}>
+                  <Link
+                    href={category.href}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Информация</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/about" className="text-gray-400 hover:text-white">
+                  О нас
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/delivery"
+                  className="text-gray-400 hover:text-white"
+                >
+                  Доставка
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/payment"
+                  className="text-gray-400 hover:text-white"
+                >
+                  Оплата
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contacts"
+                  className="text-gray-400 hover:text-white"
+                >
                   Контакты
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <p className="text-base text-gray-500">
-                      Email: info@marketplace.com
-                    </p>
-                  </li>
-                  <li>
-                    <p className="text-base text-gray-500">
-                      Телефон: +7 (999) 123-45-67
-                    </p>
-                  </li>
-                  <li>
-                    <p className="text-base text-gray-500">
-                      Адрес: г. Москва, ул. Примерная, д. 1
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </div>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Контакты</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li>Телефон: +7 (999) 123-45-67</li>
+              <li>Email: info@marketplace.ru</li>
+              <li>Адрес: г. Москва, ул. Примерная, д. 1</li>
+            </ul>
           </div>
         </div>
-        <div className="mt-12 border-t border-gray-200 pt-8">
-          <p className="text-base text-gray-400 xl:text-center">
-            &copy; {new Date().getFullYear()} Marketplace. Все права защищены.
-          </p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; 2024 Marketplace. Все права защищены.</p>
         </div>
       </div>
     </footer>
