@@ -1,0 +1,7 @@
+name,description,price,category,stock,images,specifications,brand,model,condition
+"Смартфон iPhone 13","Современный смартфон с отличной камерой и производительностью",79999,"Электроника",10,"iphone13_1.jpg,iphone13_2.jpg","{\"color\":\"black\",\"storage\":\"128GB\"}","Apple","iPhone 13","new"
+"Ноутбук MacBook Pro","Мощный ноутбук для работы и творчества",129999,"Электроника",5,"macbook_1.jpg,macbook_2.jpg","{\"processor\":\"M1\",\"ram\":\"16GB\",\"storage\":\"512GB\"}","Apple","MacBook Pro","new"
+"Беспроводные наушники AirPods Pro","Шумоподавляющие наушники с отличным звуком",24999,"Электроника",15,"airpods_1.jpg,airpods_2.jpg","{\"color\":\"white\",\"battery\":\"6h\"}","Apple","AirPods Pro","new"
+"Тормозная колодка для экскаватора","Тормозная колодка для экскаватора Komatsu PC200-8, оригинальная запчасть",12500,"Тормозная система",15,"kolodka_1.jpg,kolodka_2.jpg","{\"material\":\"керамика\",\"compatibility\":\"Komatsu PC200-8\",\"article\":\"KOM-12345\"}","Komatsu","PC200-8","new"
+"Масляный фильтр для погрузчика","Масляный фильтр для погрузчика CAT 950H, высококачественный аналог",3500,"Фильтры",25,"filter_1.jpg,filter_2.jpg","{\"type\":\"масляный\",\"compatibility\":\"CAT 950H\",\"article\":\"CAT-67890\"}","Caterpillar","950H","new"
+"Гидроцилиндр для бульдозера","Гидроцилиндр для бульдозера Shantui SD16, восстановленный",45000,"Гидравлика",5,"cylinder_1.jpg,cylinder_2.jpg","{\"diameter\":\"80mm\",\"stroke\":\"500mm\",\"compatibility\":\"Shantui SD16\",\"article\":\"SHA-54321\"}","Shantui","SD16","refurbished" 

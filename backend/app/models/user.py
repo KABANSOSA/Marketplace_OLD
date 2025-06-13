@@ -31,6 +31,7 @@ class User(BaseModel):
     orders = relationship("Order", back_populates="buyer")
     reviews = relationship("Review", back_populates="user")
     messages = relationship("Message", back_populates="user")
+    notifications = relationship("Notification", back_populates="user")
     
     def __repr__(self):
         return f"<User {self.email}>" 

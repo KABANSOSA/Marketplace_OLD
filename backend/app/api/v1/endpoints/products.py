@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_active_user, get_current_active_seller
 from app.models.user import User
@@ -14,6 +14,9 @@ from app.schemas.product import (
     CategoryUpdate,
 )
 from sqlalchemy import or_
+import pandas as pd
+from io import BytesIO
+from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -216,4 +219,146 @@ def update_category(
     db.add(category)
     db.commit()
     db.refresh(category)
-    return category 
+    return category
+
+@router.post("/bulk-upload")
+def bulk_upload_products(
+    *,
+    db: Session = Depends(get_db),
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_seller),
+) -> Any:
+    """
+    Bulk upload products from Excel/CSV file.
+    """
+    if not file.filename.endswith(('.xlsx', '.csv')):
+        raise HTTPException(
+            status_code=400,
+            detail="Only Excel (.xlsx) and CSV (.csv) files are supported"
+        )
+
+    try:
+        # Read file content
+        content = await file.read()
+        if file.filename.endswith('.xlsx'):
+            df = pd.read_excel(content)
+        else:
+            df = pd.read_csv(content)
+
+        # Validate required columns
+        required_columns = ['name', 'description', 'price', 'stock', 'category_ids']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing required columns: {', '.join(missing_columns)}"
+            )
+
+        # Process products
+        success_count = 0
+        failed_count = 0
+        errors = []
+
+        for index, row in df.iterrows():
+            try:
+                # Convert category_ids string to list
+                category_ids = [int(id.strip()) for id in str(row['category_ids']).split(',')]
+                
+                # Create product
+                product = Product(
+                    name=row['name'],
+                    description=row['description'],
+                    price=float(row['price']),
+                    stock=int(row['stock']),
+                    seller_id=current_user.id,
+                    brand=row.get('brand', ''),
+                    model=row.get('model', ''),
+                    condition=row.get('condition', 'new'),
+                    sku=row.get('sku', ''),
+                )
+
+                # Add categories
+                categories = db.query(Category).filter(Category.id.in_(category_ids)).all()
+                product.categories = categories
+
+                # Add images if provided
+                if 'images' in row and pd.notna(row['images']):
+                    image_urls = [url.strip() for url in str(row['images']).split(',')]
+                    images = [ProductImage(url=url, product=product) for url in image_urls]
+                    product.images = images
+
+                db.add(product)
+                success_count += 1
+
+            except Exception as e:
+                failed_count += 1
+                errors.append(f"Row {index + 2}: {str(e)}")
+
+        db.commit()
+
+        return {
+            "success": success_count,
+            "failed": failed_count,
+            "errors": errors
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing file: {str(e)}"
+        )
+
+@router.get("/bulk-upload/template")
+def get_bulk_upload_template(
+    *,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Get template file for bulk product upload.
+    """
+    # Create sample data
+    data = {
+        'name': ['Sample Product 1', 'Sample Product 2'],
+        'description': ['Description 1', 'Description 2'],
+        'price': [1000.00, 2000.00],
+        'stock': [10, 20],
+        'category_ids': ['1,2', '2,3'],
+        'brand': ['Brand 1', 'Brand 2'],
+        'model': ['Model 1', 'Model 2'],
+        'condition': ['new', 'used'],
+        'sku': ['SKU001', 'SKU002'],
+        'images': ['http://example.com/image1.jpg', 'http://example.com/image2.jpg']
+    }
+
+    # Create DataFrame
+    df = pd.DataFrame(data)
+
+    # Create Excel file in memory
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Products')
+        
+        # Get workbook and worksheet objects
+        workbook = writer.book
+        worksheet = writer.sheets['Products']
+
+        # Add some formatting
+        header_format = workbook.add_format({
+            'bold': True,
+            'bg_color': '#D9E1F2',
+            'border': 1
+        })
+
+        # Write headers with formatting
+        for col_num, value in enumerate(df.columns.values):
+            worksheet.write(0, col_num, value, header_format)
+            worksheet.set_column(col_num, col_num, 15)
+
+    output.seek(0)
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": "attachment; filename=product_template.xlsx"
+        }
+    ) 

@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone',
+  images: {
+    domains: ['marketplaceee.netlify.app'],
+    unoptimized: true,
+  },
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['@tanstack/react-query']
