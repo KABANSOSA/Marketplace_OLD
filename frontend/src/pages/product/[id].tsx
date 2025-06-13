@@ -1,12 +1,14 @@
-'use client';
+import { useRouter } from 'next/router';
 import { products } from '@/mocks/products';
-import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
 import Link from 'next/link';
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = products.find((p) => p.id === params.id);
-  if (!product) return notFound();
+export default function ProductPage() {
+  const router = useRouter();
+  const { id } = router.query;
+  const product = products.find((p) => p.id === id);
+
+  if (!product) return <div className="max-w-3xl mx-auto py-10 px-4">Товар не найден</div>;
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
@@ -32,9 +34,4 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
-}
-
-export async function generateStaticParams() {
-  const { products } = await import('@/mocks/products');
-  return products.map((product) => ({ id: product.id }));
 } 
