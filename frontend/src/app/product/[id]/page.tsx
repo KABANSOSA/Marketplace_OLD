@@ -31,4 +31,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  const { products } = await import('@/mocks/products');
+  return products.map((product) => ({ id: product.id }));
 } 
