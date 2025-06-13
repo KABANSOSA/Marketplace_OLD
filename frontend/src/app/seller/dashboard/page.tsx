@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { api } from '@/lib/api';
 import { Upload, Package, BarChart2, Settings } from 'lucide-react';
 import AddProductModal from '@/components/AddProductModal';
+import SellerProductCard from '@/components/SellerProductCard';
+import Link from 'next/link';
 
 export default function SellerDashboard() {
   const [activeTab, setActiveTab] = useState('products');
@@ -34,6 +36,12 @@ export default function SellerDashboard() {
       setLoading(false);
     }
   };
+
+  // Заглушка для списка товаров
+  const products = [
+    { id: 1, name: 'Товар 1', price: 10000 },
+    { id: 2, name: 'Товар 2', price: 15000 },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,28 +99,9 @@ export default function SellerDashboard() {
                 <div>
                   <div className="mb-6">
                     <h2 className="text-lg font-medium text-gray-900">Управление товарами</h2>
-                    <div className="mt-4 flex space-x-4">
-                      <button
-                        onClick={() => document.getElementById('excel-upload')?.click()}
-                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        <Upload className="h-5 w-5 mr-2" />
-                        Загрузить Excel
-                      </button>
-                      <input
-                        id="excel-upload"
-                        type="file"
-                        accept=".xlsx,.xls"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                      />
-                      <button
-                        onClick={() => setIsAddProductModalOpen(true)}
-                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                      >
-                        <Package className="h-5 w-5 mr-2" />
-                        Добавить товар
-                      </button>
+                    <div className="mt-4 flex gap-4">
+                      <Link href="/seller/add-product" className="btn-primary">Добавить товар</Link>
+                      <Link href="/seller/import" className="btn-secondary">Импорт из Excel</Link>
                     </div>
                   </div>
 
@@ -124,37 +113,10 @@ export default function SellerDashboard() {
 
                   {/* Здесь будет таблица товаров */}
                   <div className="mt-6">
-                    <div className="flex flex-col">
-                      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-50">
-                                <tr>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Название
-                                  </th>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Цена
-                                  </th>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Остаток
-                                  </th>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Статус
-                                  </th>
-                                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Действия
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {/* Здесь будут строки с товарами */}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {products.map((product) => (
+                        <SellerProductCard key={product.id} product={product} />
+                      ))}
                     </div>
                   </div>
                 </div>

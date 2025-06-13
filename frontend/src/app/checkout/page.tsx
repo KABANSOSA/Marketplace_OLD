@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CreditCard, Truck, MapPin } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import Link from 'next/link';
 
 // Временные данные для демонстрации
 const initialOrder = {
@@ -27,6 +29,7 @@ const initialOrder = {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { cart, clearCart } = useCart();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -37,19 +40,26 @@ export default function CheckoutPage() {
     postalCode: '',
     paymentMethod: 'card',
   });
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика отправки заказа
-    console.log('Order submitted:', { ...formData, ...initialOrder });
-    router.push('/checkout/success');
+    setSubmitted(true);
+    clearCart();
   };
 
-  const subtotal = initialOrder.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + initialOrder.shipping;
+
+  if (submitted) {
+    return (
+      <div className="max-w-md mx-auto py-10 px-4 text-center">
+        <h1 className="text-2xl font-bold mb-4">Спасибо за заказ!</h1>
+        <p className="mb-4">Мы свяжемся с вами для подтверждения.</p>
+        <Link href="/catalog" className="btn-primary">Вернуться в каталог</Link>
+      </div>
+    );
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -219,7 +229,7 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-4">Ваш заказ</h2>
             <div className="space-y-4">
-              {initialOrder.items.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="flex justify-between">
                   <span>
                     {item.name} x {item.quantity}
