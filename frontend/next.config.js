@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  basePath: '/Marketplace_OLD',
+  assetPrefix: '/Marketplace_OLD/',
   images: {
     unoptimized: true,
     domains: ['via.placeholder.com'],
