@@ -1,3 +1,4 @@
+'use client';
 import { products } from '@/mocks/products';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
